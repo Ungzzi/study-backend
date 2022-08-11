@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EJS</title>
+</head>
+
+<body>
+  <div style="background-color: red; color:white;">Express Test</div>
+  <img src="/static/img/짱구.png" alt="">
+  <a href="/test">이동</a>
+  <% var person=[{name: "정지웅" , gender: "남자" }, {name: "신짱구" , gender: "남자" }]%>
+
+  <table border="1">
+    <tr>
+      <td>이름</td>
+      <td>성별</td>
+    </tr>
+    <% for(var i=0; i<person.length; i++) { %>
+    <tr>
+      <td>
+        <%=person[i]["name"]%>
+      </td>
+      <td>
+        <%=person[i]["gender"]%>
+      </td>
+    </tr>
+    <% } %>
+  </table>
+  <div>
+    <% for(i = 0; i <5; i++){
+        console.log(i);
+        console.log(i+1);
+    } %>
+
+  </div>
+  <!--  -->
+
+  <% for(var i=0; i<5; i++) { %>
+  <div>안녕하세요 <%=i%>
+  </div>
+  <% } %>
+  <%-include("test1.ejs")%>
+  <script>
+
+  </script>
+</body>
+
+</html>
