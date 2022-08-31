@@ -103,23 +103,26 @@
         name: form.name.value,
         gender: form.gender.value,
       }
-      axios({
-        url: '/get/axios',
-        method: 'GET', //POST일 경우
-        params: data //params -> data
-      }).then((response) => {
-        console.log(response);
-        $("div").html(response.data.name);
-      })
-
       // axios({
-      //   url: '/post/axios',
-      //   method: 'POST', //POST일 경우
-      //   data: data //params -> data
+      //   url: '/get/axios',
+      //   method: 'GET', //POST일 경우
+      //   params: data //params -> data
       // }).then((response) => {
       //   console.log(response);
       //   $("div").html(response.data.name);
       // })
+
+      axios({
+        url: '/post/axios',
+        method: 'POST', //POST일 경우
+        data: data, //params -> data
+        timeout: 3000 // 3초 뒤에도 응답이 오지 않는다면
+      }).then((response) => {
+        console.log(response);
+        $("div").html(response.data.name);
+      }).catch((err) => {
+        console.log(err)
+      })
 
     }
 
@@ -130,17 +133,25 @@
         name: form.name.value,
         gender: form.gender.value,
       }
-      fetch("http://localhost:8000/post/fetch", {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        })
-        .then((response) => response.json())
+
+      var urlQuery = `?name=${form.name.value}&gender=${form.gender.value}`
+      fetch("http://localhost:8000/get/fetch" + urlQuery)
+        .then((response) => response.json()) // 문자열을 데이터로 전송받으면 response.text() 
         .then((data) => {
           console.log(data);
         })
+
+      // fetch("http://localhost:8000/post/fetch", {
+      //     method: 'post',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify(data),
+      //   })
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     console.log(data);
+      //   })
     }
   </script>
 
