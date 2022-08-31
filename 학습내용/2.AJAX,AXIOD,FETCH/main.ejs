@@ -11,8 +11,8 @@
 </head>
 
 <body>
-
-  <!-- <div class="get">
+  <!-- GET 요청 -->
+  <div class="get">
     GET 요청하기
     <form method="get" action="/get">
       <input type="text" name="name">
@@ -22,6 +22,7 @@
     </form>
   </div>
 
+  <!-- POST 요청 -->
   <div class="post">
     POST 요청하기
     <form method="post" action="/post">
@@ -30,7 +31,9 @@
       <button type="submit">전송</button>
       <button type="reset">리셋</button>
     </form>
-  </div> -->
+  </div>
+
+  <!-- AJAX FORM -->
   <fieldset>
     <legend>AJAX</legend>
     <form id="ajaxForm">
@@ -43,6 +46,7 @@
     </form>
   </fieldset>
 
+  <!-- AXIOS FORM -->
   <fieldset>
     <legend>AXIOS</legend>
     <form id="axiosForm">
@@ -55,6 +59,7 @@
     </form>
   </fieldset>
 
+  <!-- FETCH FORM -->
   <fieldset>
     <legend>FETCH</legend>
     <form id="fetchForm">
@@ -66,7 +71,6 @@
       <button type="button" onclick="dynamicFormFetch();">제출</button>
     </form>
   </fieldset>
-
   <div></div>
 
   <script>
@@ -79,9 +83,12 @@
         gender: form.gender.value,
       }
       $.ajax({
+
+        // GET 사용 시
         // url: "/get/ajax",
         // type: "GET",
         // data: data,
+
         url: "/post/ajax",
         type: "POST",
         data: data,
@@ -105,8 +112,8 @@
       }
       // axios({
       //   url: '/get/axios',
-      //   method: 'GET', //POST일 경우
-      //   params: data //params -> data
+      //   method: 'GET',
+      //   params: data
       // }).then((response) => {
       //   console.log(response);
       //   $("div").html(response.data.name);
@@ -114,9 +121,9 @@
 
       axios({
         url: '/post/axios',
-        method: 'POST', //POST일 경우
-        data: data, //params -> data
-        timeout: 3000 // 3초 뒤에도 응답이 오지 않는다면
+        method: 'POST',
+        data: data,
+        timeout: 3000 // 3초 뒤에도 응답이 오지 않는다면 에러 콘솔
       }).then((response) => {
         console.log(response);
         $("div").html(response.data.name);
@@ -141,6 +148,7 @@
           console.log(data);
         })
 
+      // FETCH POST
       // fetch("http://localhost:8000/post/fetch", {
       //     method: 'post',
       //     headers: {
