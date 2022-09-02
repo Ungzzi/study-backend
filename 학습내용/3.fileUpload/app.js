@@ -27,6 +27,8 @@ app.set("view engine", "ejs");
 // 방법 1. app.use(express.static('static'));
 // 방법 2. app.use('/public', express.static('static'));
 app.use('/static', express.static('static'));
+
+// 업로드 경로 사용을 위해 선언
 app.use('/uploads', express.static('uploads'));
 
 // POST 사용을 위한 선언

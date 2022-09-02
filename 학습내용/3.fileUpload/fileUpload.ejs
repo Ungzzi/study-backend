@@ -34,10 +34,10 @@
   <script>
     function fileUpload() {
       var form = document.querySelector("form");
-      const formData = new FormData();
+      const formData = new FormData();      // 파일 담아 전달할 form 생성
       const file = document.getElementById("dynamic_file");
-      formData.append("ID", $('input[name="ID"]').val());
-      formData.append("userfile", file.files[0]);
+      formData.append("ID", $('input[name="ID"]').val());   // 파일 이외에도 전달할 값을 form에 추가
+      formData.append("userfile", file.files[0]);           // 전달할 파일 form에 추가
 
       axios({
         headers: {
@@ -45,11 +45,11 @@
         },
         url: "/upload",
         method: "post",
-        data: formData
+        data: formData          // formData 전송
       }).then((response) => {
         console.log(response);
         console.log(response.data.path);
-        $("img").attr("src", response.data.path);
+        $("img").attr("src", response.data.path);       // 응답으로 온 이미지 경로를 통해 화면에 이미지 표시
       })
     }
   </script>
