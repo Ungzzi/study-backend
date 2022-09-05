@@ -13,38 +13,25 @@
 <body>
   <form method="post" action="/loggedin">
     <fieldset>
-      <legend>로그인</legend>
+      <legend>개인정보수정</legend>
       <input type="hidden" name="name">
-      아이디<input type="text" name="id" id="">
+      아이디<input type="text" name="id" id="" value="<%=data.id %>">
       <br>
-      비밀번호<input type="password" name="pw" id="">
-      <button type="submit" onclick="dynamicForm();">로그인</button>
-      <a href="/signUp"><button type="button">회원가입</button></a>
+      기존 비밀번호<input type="password" name="pw" id="" value="<%=data.pw %>">
+      <br>
+      변경 비밀번호<input type="password" name="pw" id="" value="<%=data.pw %>">
+      <br>
+      이름<input type="password" name="name" id="" value="<%=data.pw %>">
+      <br>
+      변경이름<input type="password" name="pw" id="" value="<%=data.pw %>">
+      <button type="submit" onclick="dynamicForm();">수정하기</button>
       <br>
       <div></div>
     </fieldset>
   </form>
 
   <script>
-    function dynamicForm() {
-      var form = document.querySelector("form");
-      var data = {
-        id: form.id.value,
-        name: form.name.value,
-        pw: form.pw.value
-      }
 
-      axios({
-        url: '/login',
-        method: 'post', //POST일 경우
-        data: data //params -> data
-      }).then((response) => {
-        if (response.data.length > 0) {
-          data.name = response.data[0].name;
-          console.log("성공");
-        } else $("div").html("아이디 혹은 비밀번호가 틀렸습니다.");
-      })
-    }
   </script>
 </body>
 
