@@ -39,7 +39,7 @@
         method: 'post', //POST일 경우
         data: data //params -> data
       }).then((response) => {
-        if (response.data.result > 0) {
+        if (response.data.length > 0) {
           alert("로그인됐다");
           location.href = `/loggedin?id=${data.id}`;
         } else {

@@ -13,7 +13,7 @@ app.use('/static', express.static('static'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-const router = require("./routes/user");
+const router = require("./routes");
 // const router = require("./routes/index"); 자동으로 routes 폴더 내부의 파일을 불러옴
 app.use('/', router);
 

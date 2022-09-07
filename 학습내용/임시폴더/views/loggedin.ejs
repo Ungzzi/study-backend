@@ -5,43 +5,28 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>회원가입</title>
+  <title>로그인</title>
   <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js" integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
-  <form id="signForm">
+  <form action="/update">
     <fieldset>
-      <legend>회원가입</legend>
-      아이디<input type="text" name="id" id="">
+      <legend>로그인 성공!</legend>
+      <div><%=data.name %>님 로그인을 환영합니다. %> </div>
+      <input type="hidden" name="id" value="<%=data.id%>">
+      <input type="hidden" name="pw" value="<%=data.pw%>">
+      <input type="hidden" name="name" value="<%=data.name%>">
+      <a href="/"><button type="button">로그아웃</button></a>
+      <button type="submit">마이페이지</button>
       <br>
-      이름<input type="text" name="name" id="">
-      <br>
-      비밀번호<input type="password" name="pw" id="">
-      <br>
-      <button type="button" onclick="signUp();">가입</button>
       <div></div>
     </fieldset>
   </form>
 
   <script>
-    function signUp() {
-      var form = document.getElementById("signForm");
-      var data = {
-        id: form.id.value,
-        name: form.name.value,
-        pw: form.pw.value
-      }
-      axios({
-        url: "/signUp/request",
-        method: "post",
-        data: data
-      }).then((response) => {
-        alert(response.data);
-        location.href = "/";
-      })
-    }
+
   </script>
 </body>
 

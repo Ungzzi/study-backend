@@ -1,0 +1,9 @@
+{
+    "development": {
+        "host": "localhost",
+        "database": "dbstudy",
+        "username": "root",
+        "password": "skrxk4fkd1",
+        "dialect": "mysql"
+    }
+}

@@ -46,6 +46,7 @@
         method: 'post', //POST일 경우
         data: data //params -> data
       }).then((response) => {
+        console.log("업데이트 성공");
         form.name.value = response.data.cg_name;
         form.pw.value = response.data.cg_pw;
       })
@@ -62,7 +63,7 @@
         method: 'post', //POST일 경우
         data: data //params -> data
       }).then((response) => {
-        alert("삭제 성공");
+        console.log("삭제 성공");
       })
     }
   </script>
