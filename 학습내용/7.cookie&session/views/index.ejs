@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie&Session</title>
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+</head>
+
+<body>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Do you like Cookie?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img src="https://dictionary.cambridge.org/ko/images/thumb/biscui_noun_002_03480.jpg?version=5.0.250" alt="">
+          <div>당신은 행운의 쿠키를 보았습니다.</div>
+        </div>
+        <div class="modal-footer">
+          다시보지않기<input id="cookie_cb" type="checkbox" name="cb" value="no_cookie">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="checkCookie();">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const myModal = new bootstrap.Modal("#exampleModal");
+    console.log(document.cookie);
+    if (document.cookie == "test_cookie=1") {
+      myModal.hide();
+    } else {
+      myModal.show();
+    }
+
+    function checkCookie() {
+      var checked = $('#cookie_cb').is(':checked');
+      console.log(checked);
+      axios({
+          method: 'get',
+          url: 'http://localhost:8000/get',
+          params: {
+            cookie: checked
+          }
+        })
+        .then((data) => {
+          console.log(data);
+        });
+    }
+  </script>
+</body>
+
+</html>
