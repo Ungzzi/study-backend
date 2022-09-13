@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+</head>
+
+<body>
+  <form>
+    <fieldset>
+      <legend>프로필</legend>
+      <div><%=data.id%>님 환영합니다</div>
+      <button type="button" onclick="dynamicForm();">로그아웃</button>
+      <br>
+      <div></div>
+    </fieldset>
+  </form>
+
+  <script>
+    function dynamicForm() {
+      axios({
+        url: '/logout',
+        method: 'post', //POST일 경우
+      }).then((response) => {
+        alert("로그아웃되었습니다.");
+        location.href = "/";
+      })
+    }
+  </script>
+</body>
+
+</html>
