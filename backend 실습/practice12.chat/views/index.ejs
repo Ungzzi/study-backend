@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+  <style>
+    #chatForm {
+      background-color: rgba(147, 170, 212);
+      width: 100%;
+      height: 500px;
+    }
+
+    #chatContent {
+      width: 100%;
+    }
+
+    .myMsg {
+      background-color: rgba(148, 223, 132);
+      padding: 5px;
+      border-radius: 5px;
+      margin-right: 5px;
+      text-align: right;
+    }
+
+    .otherMsg {
+      background-color: white;
+      padding: 5px;
+      margin-left: 5px;
+      border-radius: 5px;
+      text-align: left;
+    }
+
+    .enterMsg {
+      text-align: center;
+    }
+
+    .myMsgForm {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+
+    .otherMsgForm {
+      text-align: left;
+      margin-bottom: 10px;
+    }
+
+    #articleBottom {
+      display: flex;
+      justify-content: left;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 채팅방 상단 -->
+  <div id="articleTop">
+    <input id="userID" type="text">
+    <button id="enterBtn" type="button">입장</button>
+  </div>
+
+  <!-- 채팅방 본문 -->
+  <div id="chatForm">
+    <div id="chatContent">
+    </div>
+  </div>
+
+  <!-- 채팅방 하단 -->
+  <div id="articleBottom">
+    <select name="DM" id="DMList">
+      <option value="전체">전체</option>
+    </select>에게
+    <input type="text" id="myChat">
+    <button type="button">전송</button>
+  </div>
+
+
+
+  <!-- 스크립트 -->
+  <script>
+    var socket = io.connect();
+    var myChat = "";
+    var userName = "";
+
+    function addUser(data) {
+      $("#DMList").append(`<option value = ${data}>${data}</option>`);
+    }
+
+    function delUser(data) {
+      $(`#DMList option[value=${data}]`).remove();
+    }
+
+    socket.on('msg', function(data) {
+      var msg = document.createElement("span");
+      var form = document.createElement("div");
+
+      if (data.msg == myChat && data.name == userName) {
+        msg.className = 'myMsg';
+        form.className = 'myMsgForm';
+      } else {
+        msg.className = 'otherMsg';
+        form.className = 'otherMsgForm';
+      }
+      msg.append(`${data.name} : ${data.msg}`);
+      form.append(msg);
+      $("#chatContent").append(form);
+    });
+
+    socket.on('DM', function(data) {
+
+    })
+
+    socket.on('enter', function(data) {
+      if (data != undefined) {
+        var enter = document.createElement("div");
+        enter.append(data + `님이 입장하셨습니다.`);
+        addUser(data);
+        enter.className = 'enterMsg';
+        $("#chatContent").append(enter);
+      }
+    })
+
+    socket.on('exit', function(data) {
+      if (data.name != undefined) {
+        var exit = document.createElement("div");
+        exit.append(data.msg);
+        delUser(data.name);
+        exit.className = 'enterMsg';
+        if (data.server == 'SERVER') {
+          $("#chatContent").append(exit);
+        }
+      }
+    })
+
+    $("#myChat").on("keyup", function() {
+      if (window.event.keyCode == 13) {
+        myChat = $(this).val();
+        data = {
+          name: userName,
+          msg: myChat
+        }
+        socket.emit('msg', data);
+      }
+    });
+
+    $("#userID").on("keyup", function() {
+      if (window.event.keyCode == 13) {
+        userName = $(this).val();
+        socket.emit('enter', $(this).val());
+        document.getElementById('userID').disabled = true;
+      }
+    });
+  </script>
+</body>
+
+</html>
