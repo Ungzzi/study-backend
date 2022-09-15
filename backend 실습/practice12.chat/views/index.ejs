@@ -8,12 +8,34 @@
   <title>Document</title>
   <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js
+  "></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css
+  ">
 
   <style>
-    #chatForm {
+    * {
+      font-family: 'establishRoomNo703OTF';
+    }
+
+    @font-face {
+      font-family: 'establishRoomNo703OTF';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/establishRoomNo703OTF.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    .modal-body {
       background-color: rgba(147, 170, 212);
+    }
+
+    .modal-content {
+      width: 400px;
+    }
+
+    #chatForm {
       width: 100%;
-      height: 500px;
+      min-height: 500px;
     }
 
     #chatContent {
@@ -25,7 +47,6 @@
       padding: 5px;
       border-radius: 5px;
       margin-right: 5px;
-      text-align: right;
     }
 
     .otherMsg {
@@ -33,7 +54,13 @@
       padding: 5px;
       margin-left: 5px;
       border-radius: 5px;
-      text-align: left;
+    }
+
+    .DMMsg {
+      background-color: plum;
+      padding: 5px;
+      margin-left: 5px;
+      border-radius: 5px;
     }
 
     .enterMsg {
@@ -42,50 +69,153 @@
 
     .myMsgForm {
       text-align: right;
-      margin-bottom: 10px;
+      margin-top: 10px;
     }
 
     .otherMsgForm {
       text-align: left;
-      margin-bottom: 10px;
+      margin-top: 10px;
     }
 
     #articleBottom {
       display: flex;
       justify-content: left;
     }
+
+    .main {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 1000px;
+    }
+
+    .background {
+      width: 500px;
+      height: 500px;
+      text-align: center;
+      background-image: url("/static/img/chat.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .loginWrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .modal-header {
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+    }
+
+    .loginTitle {}
+
+    .loginMain {}
   </style>
 </head>
 
 <body>
-  <!-- 채팅방 상단 -->
-  <div id="articleTop">
-    <input id="userID" type="text">
-    <button id="enterBtn" type="button">입장</button>
-  </div>
 
-  <!-- 채팅방 본문 -->
-  <div id="chatForm">
-    <div id="chatContent">
+  <!-- modal -->
+
+  <!-- Button trigger modal -->
+  <div class="main">
+    <div class="background">
+      <div class="loginWrap">
+        <div class="loginTitle">
+          <h1>즐거움이 가득한 코딩톡</h1>
+        </div>
+        <div class="loginMain">
+          <input id="userID" type="text" placeholder="이름을 입력하세요">
+          <button id="loginBtn" type="button" class="btn btn-primary" onclick="login_try();">
+            로그인
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- 채팅방 하단 -->
-  <div id="articleBottom">
-    <select name="DM" id="DMList">
-      <option value="전체">전체</option>
-    </select>에게
-    <input type="text" id="myChat">
-    <button type="button">전송</button>
+  <!-- Modal -->
+  <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content border border-dark border-5 rounded-5">
+
+        <!-- header -->
+        <div class="modal-header">
+          <div id="articleTop">
+            <nav class="navbar bg-light">
+              <div class="container-fluid">
+                <a class="navbar-brand" href="#">코딩톡</a>
+                <div class="chatCnt"></div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                  <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">채팅방서랍</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                  </div>
+                  <div class="offcanvas-body">
+                    <ul id="chatUser" class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                      <li class="nav-item">
+                        <a class="nav-link" href="#">대화상대</a>
+                      </li>
+
+                    </ul>
+                    <form class="d-flex" role="search">
+                      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                      <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </nav>
+
+          </div>
+        </div>
+
+        <!-- body -->
+        <div class="modal-body">
+          <div id="chatForm">
+            <div id="chatContent">
+            </div>
+          </div>
+        </div>
+
+        <!-- footer -->
+        <div class="modal-footer">
+          <div id="articleBottom">
+            <div class="row g-3">
+              <div class="col-sm-3">
+                <select class="form-select" name="DM" id="DMList" aria-label="Default select example">
+                  <option value="전체">전체</option>
+                </select>
+              </div>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="myChat" placeholder="메시지를 입력하세요">
+              </div>
+              <div class="col-sm-3">
+                <button type="button" class="btn btn-outline-primary">전송</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-
 
   <!-- 스크립트 -->
   <script>
     var socket = io.connect();
     var myChat = "";
     var userName = "";
+    var userList = {};
+    var user_cnt = 0;
 
     function addUser(data) {
       $("#DMList").append(`<option value = ${data}>${data}</option>`);
@@ -112,16 +242,34 @@
     });
 
     socket.on('DM', function(data) {
+      var msg = document.createElement("span");
+      var form = document.createElement("div");
 
-    })
+      if (data.msg == myChat && data.name == userName) {
+        msg.className = 'DMMsg';
+        form.className = 'myMsgForm';
+        msg.append(`To. ${data.targetName} : ${data.msg}`);
+      } else {
+        msg.className = 'DMMsg';
+        form.className = 'otherMsgForm';
+        msg.append(`From. ${data.name} : ${data.msg}`);
+      }
+      form.append(msg);
+      $("#chatContent").append(form);
+    });
 
     socket.on('enter', function(data) {
-      if (data != undefined) {
+      if (data.name != undefined) {
         var enter = document.createElement("div");
-        enter.append(data + `님이 입장하셨습니다.`);
-        addUser(data);
+        enter.append(data.name + `님이 입장하셨습니다.`);
+        addUser(data.name);
         enter.className = 'enterMsg';
         $("#chatContent").append(enter);
+        userList = data.user;
+        user_cnt = Object.keys(userList).length;
+        $(".chatCnt").html(`사용자수(${user_cnt})`);
+
+        setUserList(userList);
       }
     })
 
@@ -133,6 +281,10 @@
         exit.className = 'enterMsg';
         if (data.server == 'SERVER') {
           $("#chatContent").append(exit);
+          userList = data.user;
+          user_cnt = Object.keys(userList).length;
+          $(".chatCnt").html(`사용자수(${user_cnt})`);
+          setUserList(data.userList);
         }
       }
     })
@@ -140,21 +292,56 @@
     $("#myChat").on("keyup", function() {
       if (window.event.keyCode == 13) {
         myChat = $(this).val();
+        if (myChat == "") {
+          return
+        }
+        targetName = $("#DMList option:selected").val();
         data = {
           name: userName,
+          targetName: targetName,
           msg: myChat
         }
-        socket.emit('msg', data);
+        if (targetName == "전체") {
+          socket.emit('msg', data);
+        } else {
+          socket.emit('DM', data);
+        }
+
+        $("#myChat").val('');
       }
     });
 
+    function login_try() {
+      userName = $('#userID').val();
+      socket.emit('enter', userName);
+    }
+
     $("#userID").on("keyup", function() {
       if (window.event.keyCode == 13) {
-        userName = $(this).val();
-        socket.emit('enter', $(this).val());
-        document.getElementById('userID').disabled = true;
+        login_try();
       }
     });
+
+    socket.on('check_id', function(data) {
+      if (data == false) {
+        alert("이미 존재하는 닉네임입니다.");
+      } else {
+        document.getElementById('userID').disabled = true;
+        const myModal = new bootstrap.Modal('#chatModal');
+        myModal.show()
+      }
+    })
+
+    function setUserList(data) {
+      // 대화 유저 추가
+      userList = Object.keys(data);
+      $("#chatUser").empty();
+
+      for (var i = 0; i < userList.length; i++) {
+        var $new_user = $(`<li><div>${userList[i]}</div></li>`);
+        $("#chatUser").append($new_user);
+      }
+    }
   </script>
 </body>
 
