@@ -162,9 +162,7 @@
                   </div>
                   <div class="offcanvas-body">
                     <ul id="chatUser" class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                      <li class="nav-item">
-                        <a class="nav-link" href="#">대화상대</a>
-                      </li>
+
 
                     </ul>
                     <form class="d-flex" role="search">
@@ -193,14 +191,13 @@
             <div class="row g-3">
               <div class="col-sm-3">
                 <select class="form-select" name="DM" id="DMList" aria-label="Default select example">
-                  <option value="전체">전체</option>
                 </select>
               </div>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="myChat" placeholder="메시지를 입력하세요">
               </div>
               <div class="col-sm-3">
-                <button type="button" class="btn btn-outline-primary">전송</button>
+                <button id="submitBtn" type="button" class="btn btn-outline-primary" onclick="typeChat();">전송</button>
               </div>
             </div>
           </div>
@@ -216,13 +213,21 @@
     var userName = "";
     var userList = {};
     var user_cnt = 0;
+    var loggedin = false;
+    const myModal = new bootstrap.Modal('#chatModal');
 
-    function addUser(data) {
-      $("#DMList").append(`<option value = ${data}>${data}</option>`);
-    }
-
-    function delUser(data) {
-      $(`#DMList option[value=${data}]`).remove();
+    function updateUser(data) {
+      DMuser = Object.keys(data);
+      $("#DMList").empty();
+      $("#DMList").html(`<option value ="전체">전체</option>`);
+      console.log(DMuser);
+      for (var i = 0; i < DMuser.length; i++) {
+        if (DMuser[i] == userName) {
+          continue;
+        } else {
+          $("#DMList").append(`<option value = ${DMuser[i]}> ${DMuser[i]} </option>`);
+        }
+      }
     }
 
     socket.on('msg', function(data) {
@@ -262,11 +267,11 @@
       if (data.name != undefined) {
         var enter = document.createElement("div");
         enter.append(data.name + `님이 입장하셨습니다.`);
-        addUser(data.name);
         enter.className = 'enterMsg';
         $("#chatContent").append(enter);
         userList = data.user;
         user_cnt = Object.keys(userList).length;
+        updateUser(userList);
         $(".chatCnt").html(`사용자수(${user_cnt})`);
 
         setUserList(userList);
@@ -277,37 +282,41 @@
       if (data.name != undefined) {
         var exit = document.createElement("div");
         exit.append(data.msg);
-        delUser(data.name);
         exit.className = 'enterMsg';
         if (data.server == 'SERVER') {
           $("#chatContent").append(exit);
           userList = data.user;
           user_cnt = Object.keys(userList).length;
           $(".chatCnt").html(`사용자수(${user_cnt})`);
-          setUserList(data.userList);
+          updateUser(userList);
+          setUserList(userList);
         }
       }
     })
 
+    function typeChat() {
+      myChat = $("#myChat").val();
+      if (myChat == "") {
+        return
+      }
+      targetName = $("#DMList option:selected").val();
+      data = {
+        name: userName,
+        targetName: targetName,
+        msg: myChat
+      }
+      if (targetName == "전체") {
+        socket.emit('msg', data);
+      } else {
+        socket.emit('DM', data);
+      }
+
+      $("#myChat").val('');
+    }
+
     $("#myChat").on("keyup", function() {
       if (window.event.keyCode == 13) {
-        myChat = $(this).val();
-        if (myChat == "") {
-          return
-        }
-        targetName = $("#DMList option:selected").val();
-        data = {
-          name: userName,
-          targetName: targetName,
-          msg: myChat
-        }
-        if (targetName == "전체") {
-          socket.emit('msg', data);
-        } else {
-          socket.emit('DM', data);
-        }
-
-        $("#myChat").val('');
+        typeChat();
       }
     });
 
@@ -323,12 +332,14 @@
     });
 
     socket.on('check_id', function(data) {
-      if (data == false) {
+      if (loggedin == true) {
+        myModal.show();
+      } else if (data == false) {
         alert("이미 존재하는 닉네임입니다.");
       } else {
         document.getElementById('userID').disabled = true;
-        const myModal = new bootstrap.Modal('#chatModal');
-        myModal.show()
+        myModal.show();
+        loggedin = true;
       }
     })
 
@@ -336,7 +347,9 @@
       // 대화 유저 추가
       userList = Object.keys(data);
       $("#chatUser").empty();
-
+      $("#chatUser").html(`<li class="nav-item">
+                        <a class="nav-link" href="#">대화상대</a>
+                      </li>`)
       for (var i = 0; i < userList.length; i++) {
         var $new_user = $(`<li><div>${userList[i]}</div></li>`);
         $("#chatUser").append($new_user);

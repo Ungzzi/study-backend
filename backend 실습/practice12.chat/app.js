@@ -50,7 +50,6 @@ io.on("connection", function (socket) {
         delete userList[socket.name];
         socket.broadcast.emit('exit', {
             server: 'SERVER',
-            userList: userList,
             name: socket.name,
             user: userList,
             msg: msg
