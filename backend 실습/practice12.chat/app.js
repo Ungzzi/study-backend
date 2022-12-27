@@ -1,3 +1,18 @@
+const multer = require("multer");
+const path = require("path");
+const upload = multer({
+    storage: multer.diskStorage({
+        destination(req, file, done) {
+            done(null, 'uploads/');
+        },
+        filename(req, file, done) {
+            const ext = path.extname(file.originalname);
+            done(null, path.basename(file.originalname) + ext);
+        },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+})
+
 const express = require("express");
 const app = express();
 var http = require("http").Server(app); //express 로 만든 서버를 http와 연결
@@ -8,10 +23,18 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/static', express.static('static'));
+app.use('/uploads', express.static('uploads'));
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.get("/", (req, res) => {
     res.render("index");
 });
+
+app.post("/upload", upload.single("userfile"), (req, res) => {
+    res.send(req.file);
+})
 
 userList = {}
 
@@ -35,13 +58,14 @@ io.on("connection", function (socket) {
     socket.on('msg', function (data) {
         var info = {
             name: data.name,
-            msg: data.msg
+            msg: data.msg,
+            img: data.img
         }
         io.emit('msg', info);
     });
 
     socket.on('DM', function (data) {
-        io.to(userList[data.name]).emit('DM', data);
+        socket.emit('DM', data);
         io.to(userList[data.targetName]).emit('DM', data);
     })
 

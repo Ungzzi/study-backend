@@ -12,6 +12,7 @@
   "></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css
   ">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js" integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
     * {
@@ -27,6 +28,7 @@
 
     .modal-body {
       background-color: rgba(147, 170, 212);
+      padding-top: 5px;
     }
 
     .modal-content {
@@ -113,6 +115,39 @@
       margin: 0;
     }
 
+    #chatContent img {
+      background-color: white;
+      padding: 10px;
+      width: 70px;
+      height: 70px;
+      border-radius: 5px;
+    }
+
+    #uploadBtn {
+      width: 100%;
+      padding: 0;
+      height: auto;
+      border: none;
+      background-color: transparent;
+    }
+
+    #uploadBtn img {
+      width: 100%;
+      height: auto;
+    }
+
+    #file_upload {
+      visibility: hidden;
+    }
+
+    .modal-footer {
+      padding: 5px;
+    }
+
+    #submitBtn {
+      width: 100%;
+    }
+
     .loginTitle {}
 
     .loginMain {}
@@ -152,7 +187,7 @@
               <div class="container-fluid">
                 <a class="navbar-brand" href="#">코딩톡</a>
                 <div class="chatCnt"></div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" style="border: transparent;">
                   <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
@@ -161,14 +196,29 @@
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                   </div>
                   <div class="offcanvas-body">
-                    <ul id="chatUser" class="navbar-nav justify-content-end flex-grow-1 pe-3">
-
+                    <ul id="imgAndVideo" class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                      <li class="nav-item">
+                        <a class="nav-link" href="#">사진&동영상</a>
+                        <div class="row">
+                          <div class="col-3 imgPreview" style="width: 90px;">
+                            <img src="/static/img/chat.png" alt="" style="width: 100%;">
+                          </div>
+                          <div class="col-3" style="width: 90px;">
+                            <img src="/static/img/camera.png" alt="" style="width: 100%;">
+                          </div>
+                          <div class="col-3" style="width: 90px;">
+                            <img src="/static/img/chat.png" alt="" style="width: 100%;">
+                          </div>
+                          <div class="col-3" style="width: 90px;">
+                            <img src="/static/img/chat.png" alt="" style="width: 100%;">
+                          </div>
+                        </div>
+                      </li>
 
                     </ul>
-                    <form class="d-flex" role="search">
-                      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                      <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
+                    <ul id="chatUser" class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    </ul>
+
                   </div>
                 </div>
               </div>
@@ -181,6 +231,9 @@
         <div class="modal-body">
           <div id="chatForm">
             <div id="chatContent">
+              <div class="myMsgForm">
+              </div>
+
             </div>
           </div>
         </div>
@@ -188,16 +241,20 @@
         <!-- footer -->
         <div class="modal-footer">
           <div id="articleBottom">
-            <div class="row g-3">
+            <div class="row g-1">
               <div class="col-sm-3">
-                <select class="form-select" name="DM" id="DMList" aria-label="Default select example">
+                <select class="form-select form-select" name="DM" id="DMList" aria-label="Default select example">
                 </select>
               </div>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="myChat" placeholder="메시지를 입력하세요">
+                <input type="text" class="form-control form-control" id="myChat" placeholder="메시지를 입력하세요">
               </div>
-              <div class="col-sm-3">
-                <button id="submitBtn" type="button" class="btn btn-outline-primary" onclick="typeChat();">전송</button>
+              <div class="col-sm-1" style="padding: 0;">
+                <button type="button" id="uploadBtn" onclick="img_load();"><img src="/static/img/camera.png"></button>
+                <input type="file" name="userfile" id="file_upload" onchange="fileUpload();">
+              </div>
+              <div class="col-sm-2">
+                <button id="submitBtn" type="button" class="btn btn btn-outline-primary" onclick="typeChat();">전송</button>
               </div>
             </div>
           </div>
@@ -216,11 +273,32 @@
     var loggedin = false;
     const myModal = new bootstrap.Modal('#chatModal');
 
+    function img_load() {
+      $("#file_upload").click();
+    }
+
+    function fileUpload() {
+      const formData = new FormData(); // 파일 담아 전달할 form 생성
+      const file = document.getElementById("file_upload");
+      formData.append("userfile", file.files[0]); // 전달할 파일 form에 추가
+      axios({
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        url: "/upload",
+        method: "post",
+        data: formData // formData 전송
+      }).then((response) => {
+        var img_path = response.data.path;
+        sendImg(img_path);
+        $("#file_upload").val('');
+      })
+    }
+
     function updateUser(data) {
       DMuser = Object.keys(data);
       $("#DMList").empty();
       $("#DMList").html(`<option value ="전체">전체</option>`);
-      console.log(DMuser);
       for (var i = 0; i < DMuser.length; i++) {
         if (DMuser[i] == userName) {
           continue;
@@ -233,15 +311,26 @@
     socket.on('msg', function(data) {
       var msg = document.createElement("span");
       var form = document.createElement("div");
+      var msgName = document.createElement("div");
 
-      if (data.msg == myChat && data.name == userName) {
+      if (data.name == userName) {
+        msgName.innerText = "나";
         msg.className = 'myMsg';
         form.className = 'myMsgForm';
       } else {
+        msgName.innerText = data.name;
         msg.className = 'otherMsg';
         form.className = 'otherMsgForm';
       }
-      msg.append(`${data.name} : ${data.msg}`);
+      if (data.img == undefined) {
+        msg.append(`${data.msg}`);
+      } else {
+        var img = document.createElement("img");
+        img.setAttribute("src", data.img);
+        msg.classList.remove('myMsg', 'otherMsg');
+        msg.append(img);
+      }
+      form.append(msgName);
       form.append(msg);
       $("#chatContent").append(form);
     });
@@ -249,16 +338,27 @@
     socket.on('DM', function(data) {
       var msg = document.createElement("span");
       var form = document.createElement("div");
+      var msgName = document.createElement("div");
 
-      if (data.msg == myChat && data.name == userName) {
+      if (data.name == userName) {
         msg.className = 'DMMsg';
         form.className = 'myMsgForm';
-        msg.append(`To. ${data.targetName} : ${data.msg}`);
+        msgName.innerText = `To. ${data.targetName}`;
       } else {
         msg.className = 'DMMsg';
         form.className = 'otherMsgForm';
-        msg.append(`From. ${data.name} : ${data.msg}`);
+        msgName.innerText = `From. ${data.name}`;
       }
+
+      if (data.img == undefined) {
+        msg.append(`${data.msg}`);
+      } else {
+        var img = document.createElement("img");
+        img.setAttribute("src", data.img);
+        msg.classList.remove('DMMsg');
+        msg.append(img);
+      }
+      form.append(msgName);
       form.append(msg);
       $("#chatContent").append(form);
     });
@@ -303,7 +403,8 @@
       data = {
         name: userName,
         targetName: targetName,
-        msg: myChat
+        msg: myChat,
+        img: undefined
       }
       if (targetName == "전체") {
         socket.emit('msg', data);
@@ -312,6 +413,21 @@
       }
 
       $("#myChat").val('');
+    }
+
+    function sendImg(img_path) {
+      targetName = $("#DMList option:selected").val();
+      data = {
+        name: userName,
+        targetName: targetName,
+        msg: undefined,
+        img: img_path
+      }
+      if (targetName == "전체") {
+        socket.emit('msg', data);
+      } else {
+        socket.emit('DM', data);
+      }
     }
 
     $("#myChat").on("keyup", function() {
