@@ -25,6 +25,7 @@ const crawler = async () => {
     const page2 = await browser.newPage();
     const page3 = await browser.newPage();
     await page1.goto('https://naver.com');
+    // await page1.screenshot({ path: 'test.png' }); 스크린샷 캡처
     await page2.goto('https://google.com');
     await page3.goto('https://daum.net');
     await page1.waitForTimeout(1000);
@@ -36,4 +37,24 @@ const crawler = async () => {
     await browser.close();
 }
 
-crawler();
+const crawler2 = async () => {
+    const browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
+    await page.goto('https://example.com');
+
+    const dimensions = await page.evaluate(() => {
+        return {
+            width: document.documentElement.clientWidth,
+            height: document.documentElement.clientHeight,
+            deviceScaleFactor: window.devicePixelRatio,
+        };
+    });
+
+    console.log('Dimensions: ', dimensions);
+
+    await page.close();
+    await browser.close();
+}
+
+// crawler();
+crawler2();
